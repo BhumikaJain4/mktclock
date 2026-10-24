@@ -1,0 +1,67 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-signal: #FF5722;
+  }
+
+  /* Prevent rubber-banding / bounce scroll on iOS */
+  html, body {
+    touch-action: pan-x pan-y;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Accessible focus ring */
+  *:focus-visible {
+    outline: 2px solid #FF5722;
+    outline-offset: 2px;
+  }
+}
+
+/* Subtle architectural grain / grid overlay */
+.bg-grid-pattern {
+  background-size: 32px 32px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+}
+
+.bg-dot-pattern {
+  background-size: 24px 24px;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+}
+
+/* Timer typography glow */
+.timer-digits {
+  font-feature-settings: "tnum";
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.04em;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0C0D0F;
+}
+::-webkit-scrollbar-thumb {
+  background: #21252B;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #2E333C;
+}
+
+/* Accessibility: respect user prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
