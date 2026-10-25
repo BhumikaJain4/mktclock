@@ -11,12 +11,29 @@
   html, body {
     touch-action: pan-x pan-y;
     -webkit-tap-highlight-color: transparent;
+    /* Prevent horizontal overflow on mobile */
+    overflow-x: hidden;
   }
 
   /* Accessible focus ring */
   *:focus-visible {
     outline: 2px solid #FF5722;
     outline-offset: 2px;
+  }
+
+  /* Ensure buttons have at least 44px touch targets on mobile (Apple HIG) */
+  button {
+    min-height: 44px;
+  }
+
+  /* Remove number input spinners for cleaner mobile UX */
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type="number"] {
+    -moz-appearance: textfield;
   }
 }
 
@@ -54,6 +71,34 @@
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #2E333C;
+}
+
+/* Safe area insets for notched phones (iPhone X+, Android with cutouts) */
+@supports (padding: env(safe-area-inset-bottom)) {
+  body {
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+}
+
+/* Mobile: reduce outer padding and keep content within viewport */
+@media (max-width: 640px) {
+  /* Larger touch targets for nav icon buttons on mobile */
+  nav button {
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Make tables scroll horizontally instead of overflowing */
+  table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
 }
 
 /* Accessibility: respect user prefers-reduced-motion */

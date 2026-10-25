@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { LeaderboardEntry } from '../types';
 import { formatDate, formatDisplayName } from '../utils/formatters';
 import { Award } from 'lucide-react';
@@ -12,6 +12,8 @@ export const LeaderboardRow = React.forwardRef<HTMLDivElement, LeaderboardRowPro
   ({ entry, isCurrentUser }, ref) => {
     const isTopThree = entry.rank <= 3;
     const displayName = formatDisplayName(entry.display_name);
+    const [imgError, setImgError] = useState(false);
+    const showPicture = !imgError && !!entry.picture;
 
     return (
       <div
@@ -43,23 +45,25 @@ export const LeaderboardRow = React.forwardRef<HTMLDivElement, LeaderboardRowPro
 
           {/* Avatar */}
           <div className="shrink-0 relative">
-            {entry.picture ? (
+            {showPicture ? (
               <img
-                src={entry.picture}
+                src={entry.picture!}
                 alt=""
                 className={`w-10 h-10 rounded-xl object-cover border ${
                   isCurrentUser ? 'border-signal shadow-signal-glow' : 'border-ink-700'
                 }`}
+                onError={() => setImgError(true)}
               />
             ) : (
               <div
-                className={`w-10 h-10 rounded-xl flex items-center justify-center font-mono font-bold text-xs ${
+                className={`w-10 h-10 rounded-xl flex items-center justify-center font-mono font-bold text-sm ${
                   isCurrentUser
                     ? 'bg-signal text-white shadow-signal-glow'
                     : 'bg-ink-800 border border-ink-700 text-ink-300'
                 }`}
               >
-                {entry.avatar_initials}
+                {/* Show the first letter of the display name */}
+                {(entry.avatar_initials || displayName || 'U')[0].toUpperCase()}
               </div>
             )}
             {isTopThree && (

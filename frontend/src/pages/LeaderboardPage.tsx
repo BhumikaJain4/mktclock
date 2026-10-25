@@ -109,7 +109,7 @@ export const LeaderboardPage: React.FC<LeaderboardPageProps> = ({ navigate }) =>
   const isCurrentUserInList = Boolean(user && entries.some((e) => e.student_id === user.id));
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-8 space-y-6">
+    <div className="max-w-2xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6">
       {/* Header */}
       <div className="text-center space-y-2">
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-ink-900 border border-ink-800 text-xs font-mono text-ink-300">

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { LeaderboardEntry } from '../types';
 import { formatDisplayName } from '../utils/formatters';
 import { Trophy, Crown, Medal, Sparkles } from 'lucide-react';
@@ -7,6 +7,46 @@ interface PodiumProps {
   entries: LeaderboardEntry[];
   currentStudentId?: string | null;
 }
+
+/** Small avatar that falls back to first letter if picture fails to load */
+const PodiumAvatar: React.FC<{
+  entry: LeaderboardEntry;
+  isCurrentUser: boolean;
+  size: 'lg' | 'md';
+}> = ({ entry, isCurrentUser, size }) => {
+  const [imgError, setImgError] = useState(false);
+  const showPicture = !imgError && !!entry.picture;
+  const firstLetter = ((entry.avatar_initials || entry.display_name || 'U')[0]).toUpperCase();
+
+  const sizeClasses = size === 'lg'
+    ? 'w-16 h-16 sm:w-20 sm:h-20 text-xl sm:text-2xl'
+    : 'w-14 h-14 sm:w-16 sm:h-16 text-lg sm:text-xl';
+
+  const borderClasses = isCurrentUser
+    ? size === 'lg'
+      ? 'border-signal bg-signal/25 text-signal shadow-signal-glow ring-4 ring-signal/40'
+      : 'border-signal bg-signal/20 text-signal shadow-signal-glow ring-2 ring-signal/40'
+    : entry.rank === 1
+    ? 'border-amber-400 bg-gradient-to-b from-amber-500/20 via-ink-900 to-ink-950 text-amber-300 shadow-[0_0_20px_rgba(251,191,36,0.35)] group-hover:border-amber-300'
+    : entry.rank === 2
+    ? 'border-slate-300/50 bg-gradient-to-b from-slate-800 to-ink-900 text-slate-200 shadow-md group-hover:border-slate-300'
+    : 'border-amber-700/50 bg-gradient-to-b from-amber-950/60 to-ink-900 text-amber-500 shadow-md group-hover:border-amber-600';
+
+  return (
+    <div className={`${sizeClasses} rounded-2xl border-2 flex items-center justify-center font-mono font-bold transition-all duration-300 overflow-hidden ${borderClasses}`}>
+      {showPicture ? (
+        <img
+          src={entry.picture!}
+          alt=""
+          className="w-full h-full object-cover"
+          onError={() => setImgError(true)}
+        />
+      ) : (
+        <span>{firstLetter}</span>
+      )}
+    </div>
+  );
+};
 
 export const Podium: React.FC<PodiumProps> = ({ entries, currentStudentId }) => {
   if (entries.length < 1) return null;
@@ -22,24 +62,12 @@ export const Podium: React.FC<PodiumProps> = ({ entries, currentStudentId }) => 
         {second ? (
           <div className="flex flex-col items-center text-center space-y-2 group">
             <div className="relative">
-              <div
-                className={`w-14 h-14 sm:w-16 sm:h-16 rounded-2xl border-2 flex items-center justify-center font-mono font-bold text-lg sm:text-xl transition-all duration-300 ${
-                  second.student_id === currentStudentId
-                    ? 'border-signal bg-signal/20 text-signal shadow-signal-glow ring-2 ring-signal/40'
-                    : 'border-slate-300/50 bg-gradient-to-b from-slate-800 to-ink-900 text-slate-200 shadow-md group-hover:border-slate-300'
-                }`}
-              >
-                {second.picture ? (
-                  <img src={second.picture} alt="" className="w-full h-full rounded-2xl object-cover" />
-                ) : (
-                  second.avatar_initials
-                )}
-              </div>
+              <PodiumAvatar entry={second} isCurrentUser={second.student_id === currentStudentId} size="md" />
               <div className="absolute -bottom-2 -right-1 w-6 h-6 rounded-full bg-slate-300 text-ink-950 font-bold text-xs flex items-center justify-center shadow-md border border-white/50">
                 2
               </div>
               {second.student_id === currentStudentId && (
-                <div className="absolute -top-2 left-1/2 -translate-x-1/2 px-1.5 py-0.2 bg-signal text-white rounded text-[9px] font-mono font-bold uppercase shadow">
+                <div className="absolute -top-2 left-1/2 -translate-x-1/2 px-1.5 py-0.5 bg-signal text-white rounded text-[9px] font-mono font-bold uppercase shadow">
                   YOU
                 </div>
               )}
@@ -71,19 +99,7 @@ export const Podium: React.FC<PodiumProps> = ({ entries, currentStudentId }) => 
             </div>
 
             <div className="relative">
-              <div
-                className={`w-16 h-16 sm:w-20 sm:h-20 rounded-2xl border-2 flex items-center justify-center font-mono font-bold text-xl sm:text-2xl transition-all duration-300 ${
-                  first.student_id === currentStudentId
-                    ? 'border-signal bg-signal/25 text-signal shadow-signal-glow ring-4 ring-signal/40'
-                    : 'border-amber-400 bg-gradient-to-b from-amber-500/20 via-ink-900 to-ink-950 text-amber-300 shadow-[0_0_20px_rgba(251,191,36,0.35)] group-hover:border-amber-300'
-                }`}
-              >
-                {first.picture ? (
-                  <img src={first.picture} alt="" className="w-full h-full rounded-2xl object-cover" />
-                ) : (
-                  first.avatar_initials
-                )}
-              </div>
+              <PodiumAvatar entry={first} isCurrentUser={first.student_id === currentStudentId} size="lg" />
               <div className="absolute -bottom-2 -right-1 w-7 h-7 rounded-full bg-gradient-to-tr from-amber-500 to-amber-300 text-ink-950 font-black text-xs flex items-center justify-center shadow-lg border-2 border-ink-950">
                 1
               </div>
@@ -115,24 +131,12 @@ export const Podium: React.FC<PodiumProps> = ({ entries, currentStudentId }) => 
         {third ? (
           <div className="flex flex-col items-center text-center space-y-2 group">
             <div className="relative">
-              <div
-                className={`w-14 h-14 sm:w-16 sm:h-16 rounded-2xl border-2 flex items-center justify-center font-mono font-bold text-lg sm:text-xl transition-all duration-300 ${
-                  third.student_id === currentStudentId
-                    ? 'border-signal bg-signal/20 text-signal shadow-signal-glow ring-2 ring-signal/40'
-                    : 'border-amber-700/50 bg-gradient-to-b from-amber-950/60 to-ink-900 text-amber-500 shadow-md group-hover:border-amber-600'
-                }`}
-              >
-                {third.picture ? (
-                  <img src={third.picture} alt="" className="w-full h-full rounded-2xl object-cover" />
-                ) : (
-                  third.avatar_initials
-                )}
-              </div>
+              <PodiumAvatar entry={third} isCurrentUser={third.student_id === currentStudentId} size="md" />
               <div className="absolute -bottom-2 -right-1 w-6 h-6 rounded-full bg-amber-700 text-white font-bold text-xs flex items-center justify-center shadow-md border border-amber-500/50">
                 3
               </div>
               {third.student_id === currentStudentId && (
-                <div className="absolute -top-2 left-1/2 -translate-x-1/2 px-1.5 py-0.2 bg-signal text-white rounded text-[9px] font-mono font-bold uppercase shadow">
+                <div className="absolute -top-2 left-1/2 -translate-x-1/2 px-1.5 py-0.5 bg-signal text-white rounded text-[9px] font-mono font-bold uppercase shadow">
                   YOU
                 </div>
               )}

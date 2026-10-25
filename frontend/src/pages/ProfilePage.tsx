@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { request } from '../services/api';
 import { ChallengeAttempt } from '../types';
-import { formatDurationDisplay, formatSeconds, formatDate, getInitials } from '../utils/formatters';
+import { formatDurationDisplay, formatSeconds, formatDate } from '../utils/formatters';
 import { LoadingState } from '../components/LoadingState';
 import { Button } from '../components/Button';
 import { CheckCircle2, Clock, ShieldCheck, ArrowRight } from 'lucide-react';
@@ -11,10 +11,36 @@ interface ProfilePageProps {
   navigate: (route: string) => void;
 }
 
+/**
+ * Returns the first letter of the first name, capitalised.
+ * e.g. "akkshat.s" -> "A", "Bhumika J" -> "B"
+ */
+function getFirstLetter(name?: string | null): string {
+  if (!name || !name.trim()) return 'U';
+  let cleaned = name.trim();
+  if (cleaned.includes('@')) cleaned = cleaned.split('@')[0];
+  const parts = cleaned.replace(/[._]/g, ' ').split(/\s+/).filter(Boolean);
+  if (parts.length > 0) return parts[0][0].toUpperCase();
+  return cleaned[0].toUpperCase();
+}
+
+/**
+ * Returns the display name (first name only, properly capitalised).
+ * e.g. "akkshat.s" -> "Akkshat S"
+ */
+function formatName(name?: string | null): string {
+  if (!name || !name.trim()) return 'Student';
+  let cleaned = name.trim();
+  if (cleaned.includes('@')) cleaned = cleaned.split('@')[0];
+  const parts = cleaned.replace(/[._]/g, ' ').split(/\s+/).filter(Boolean);
+  return parts.map(t => t.charAt(0).toUpperCase() + t.slice(1).toLowerCase()).join(' ');
+}
+
 export const ProfilePage: React.FC<ProfilePageProps> = ({ navigate }) => {
   const { user } = useAuth();
   const [attempts, setAttempts] = useState<ChallengeAttempt[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [imgError, setImgError] = useState<boolean>(false);
 
   useEffect(() => {
     async function loadHistory() {
@@ -34,26 +60,32 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ navigate }) => {
     return <LoadingState message="Loading your focus record..." />;
   }
 
+  const firstLetter = getFirstLetter(user?.name);
+  const displayName = formatName(user?.name);
+  const showPicture = !imgError && !!user?.picture;
+
   return (
-    <div className="max-w-2xl mx-auto px-4 py-8 space-y-6">
+    <div className="max-w-2xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6">
       {/* Student Profile Card */}
       <div className="p-6 rounded-2xl bg-ink-900 border border-ink-800 space-y-4 shadow-xl">
         <div className="flex items-center gap-4">
-          {user?.picture ? (
+          {/* Avatar: first letter fallback if picture fails */}
+          {showPicture ? (
             <img
-              src={user.picture}
+              src={user!.picture!}
               alt=""
               className="w-16 h-16 rounded-2xl object-cover border-2 border-ink-700"
+              onError={() => setImgError(true)}
             />
           ) : (
-            <div className="w-16 h-16 rounded-2xl bg-signal/15 border-2 border-signal/40 text-signal font-mono font-bold text-xl flex items-center justify-center">
-              {getInitials(user?.name)}
+            <div className="w-16 h-16 rounded-2xl bg-signal/15 border-2 border-signal/40 text-signal font-mono font-black text-2xl flex items-center justify-center select-none">
+              {firstLetter}
             </div>
           )}
 
           <div className="space-y-1">
             <h1 className="text-xl sm:text-2xl font-display font-bold text-white">
-              {user?.name}
+              {displayName}
             </h1>
             <div className="flex items-center gap-1.5 text-xs font-mono text-ink-400">
               <ShieldCheck className="w-3.5 h-3.5 text-signal" />

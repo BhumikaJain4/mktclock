@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { AppHeader } from './components/AppHeader';
-import { LibraryQRCodeModal } from './components/LibraryQRCodeModal';
 import { EntryPage } from './pages/EntryPage';
 import { LoginPage } from './pages/LoginPage';
 import { TimerPage } from './pages/TimerPage';
@@ -14,7 +13,6 @@ function RouterApp() {
   const { isAuthenticated, isLoading } = useAuth();
   const [currentRoute, setCurrentRoute] = useState<string>(() => window.location.pathname || '/');
   const [routeState, setRouteState] = useState<any>(null);
-  const [isQrModalOpen, setIsQrModalOpen] = useState<boolean>(false);
 
   // Sync with browser history back/forward
   useEffect(() => {
@@ -72,18 +70,11 @@ function RouterApp() {
       <AppHeader
         currentRoute={currentRoute}
         navigate={navigate}
-        onOpenQrModal={() => setIsQrModalOpen(true)}
       />
 
       <main className="flex-1 w-full max-w-4xl mx-auto flex flex-col">
         {content}
       </main>
-
-      {/* Universal Library QR Code Modal */}
-      <LibraryQRCodeModal
-        isOpen={isQrModalOpen}
-        onClose={() => setIsQrModalOpen(false)}
-      />
     </div>
   );
 }

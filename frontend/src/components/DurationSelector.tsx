@@ -121,7 +121,7 @@ export const DurationSelector: React.FC<DurationSelectorProps> = ({
             <button
               type="button"
               onClick={() => adjustCustom(-5)}
-              className="w-8 h-8 rounded-lg bg-ink-800 hover:bg-ink-700 text-ink-200 flex items-center justify-center cursor-pointer border border-ink-700"
+              className="w-11 h-11 rounded-xl bg-ink-800 hover:bg-ink-700 active:bg-ink-600 text-ink-200 flex items-center justify-center cursor-pointer border border-ink-700 transition-colors"
             >
               <Minus className="w-3.5 h-3.5" />
             </button>
@@ -146,7 +146,7 @@ export const DurationSelector: React.FC<DurationSelectorProps> = ({
             <button
               type="button"
               onClick={() => adjustCustom(5)}
-              className="w-8 h-8 rounded-lg bg-ink-800 hover:bg-ink-700 text-ink-200 flex items-center justify-center cursor-pointer border border-ink-700"
+              className="w-11 h-11 rounded-xl bg-ink-800 hover:bg-ink-700 active:bg-ink-600 text-ink-200 flex items-center justify-center cursor-pointer border border-ink-700 transition-colors"
             >
               <Plus className="w-3.5 h-3.5" />
             </button>

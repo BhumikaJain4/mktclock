@@ -207,7 +207,7 @@ export const TimerPage: React.FC<TimerPageProps> = ({ navigate }) => {
   }
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] p-4 sm:p-6 flex flex-col justify-center">
+    <div className="min-h-[calc(100vh-56px)] sm:min-h-[calc(100vh-4rem)] px-4 py-6 sm:p-8 flex flex-col justify-center items-center">
       {/* Interrupted / Session Logged Notice */}
       {interruptedNotice && !activeAttempt && (
         <div className="w-full max-w-md mx-auto mb-6 p-4 rounded-2xl bg-ink-900 border border-ink-700/80 space-y-3 animate-fade-in shadow-xl">
